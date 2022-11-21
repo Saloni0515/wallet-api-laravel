@@ -124,10 +124,18 @@ class UserController extends Controller
         }
 
         $data = User::find($request->id);
-        $data->wallet = $data->wallet+$request->add_amount;
-        $data->save();
-        return response()->json($data, 200);
 
+
+        if ($data) {            
+           $data->wallet = $data->wallet+$request->add_amount;
+           $data->save();
+           return response()->json($data, 200);
+        }else{                
+            return response()->json([
+                "status" => 'error',
+                "message" => 'User not found!',
+            ],Response::HTTP_BAD_REQUEST);
+        }
     }
 
     public function buyCookie(Request $request)
@@ -150,9 +158,19 @@ class UserController extends Controller
         }
 
         $data = User::find($request->id);
-        $data->wallet = $data->wallet-$request->rate;
-        $data->save();
-        return response()->json($data, 200);
+
+        if($data->wallet > 0 && $data->wallet >= $request->rate) {
+            $data->wallet = $data->wallet-$request->rate;
+            $data->save();
+            return response()->json($data, 200);
+        }else{
+
+            return response()->json([
+                "status" => 'error',
+                "message" => 'Insufficient amount for purchase!',
+            ],Response::HTTP_BAD_REQUEST);
+        }
+        
     }
 
 }
