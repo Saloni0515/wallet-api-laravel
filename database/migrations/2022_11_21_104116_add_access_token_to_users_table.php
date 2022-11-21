@@ -14,7 +14,7 @@ class AddAccessTokenToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('access_token')->default(0)->after('email');
+            $table->string('access_token')->after('email');
         });
     }
 
