@@ -108,7 +108,6 @@ class UserController extends Controller
     public function addWalletMoney(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
             'add_amount'=>['required','numeric', 'min:3','max:100'],
         ]);
 
@@ -123,9 +122,7 @@ class UserController extends Controller
             ],Response::HTTP_BAD_REQUEST);
         }
 
-        $data = User::find($request->id);
-
-
+        $data = User::where('access_token', $request->header('Authorization'))->first();
         if ($data) {            
            $data->wallet = $data->wallet+$request->add_amount;
            $data->save();
@@ -142,7 +139,6 @@ class UserController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
             'rate'=> ['required','numeric', 'min:1'],
         ]);
 
@@ -157,8 +153,8 @@ class UserController extends Controller
             ],Response::HTTP_BAD_REQUEST);
         }
 
-        $data = User::find($request->id);
-
+        $data = User::where('access_token', $request->header('Authorization'))->first();
+        
         if($data->wallet > 0 && $data->wallet >= $request->rate) {
             $data->wallet = $data->wallet-$request->rate;
             $data->save();

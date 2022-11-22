@@ -32,18 +32,14 @@ class AuthController extends Controller
             ],Response::HTTP_BAD_REQUEST);
         }
 
+        $unique_code = $request->email.$request->password;
+        $user_token = base64_encode($unique_code);
+
         $user = User::create([
             'name'      => $request->name,
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
-        ]);
-
-
-        $unique_code = $request->email.$request->password;
-        $user_token = base64_encode($unique_code);
-
-        User::where('id', $user->id)->update([
-            'access_token'   => $user_token
+            'access_token' => $user_token,
         ]);
 
         return response()->json([
@@ -87,7 +83,7 @@ class AuthController extends Controller
                "error" => 'Authentication error',
                "message" => 'Unauthorised',
            ],Response::HTTP_BAD_REQUEST);
-           return response()->json(['error' => 'Unauthorised'], 401);
+         
         } else {
            auth()->login($user);
            $token = auth()->user()->access_token;

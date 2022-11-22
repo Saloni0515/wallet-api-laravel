@@ -20,7 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::resource('users', UserController::class);
-Route::post('add-wallet', [App\Http\Controllers\UserController::class, 'addWalletMoney']);
-Route::post('subtract-wallet', [App\Http\Controllers\UserController::class, 'buyCookie']);
 Route::post('register', [App\Http\Controllers\AuthController::class, 'register']);
 Route::post('login', [App\Http\Controllers\AuthController::class, 'login']);
+
+Route::group(['middleware' => 'wallet_api'], function () {
+    Route::post('add-wallet', [App\Http\Controllers\UserController::class, 'addWalletMoney']);
+    Route::post('subtract-wallet', [App\Http\Controllers\UserController::class, 'buyCookie']);
+
+});
